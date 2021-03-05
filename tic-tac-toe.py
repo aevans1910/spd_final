@@ -9,7 +9,7 @@
 
 import random
 
-boardRepresentationStrsNum = 10
+BOARD_SIZE = 10
 
 def drawBoard(board):
     """Prints out the board that function was passed. This board will
@@ -126,7 +126,7 @@ def getComputerMove(board, computerMove):
 
     # Here is our algorithm for our Tic Tac Toe AI:
     # First, check if we can win in the next move
-    for i in range(1, boardRepresentationStrsNum):
+    for i in range(1, BOARD_SIZE):
         copy = getBoardCopy(board)
         if isSpaceFree(copy, i):
             makeMove(copy, computerMove, i)
@@ -134,7 +134,7 @@ def getComputerMove(board, computerMove):
                 return i
 
     # Check if the player could win on their next move, and block them.
-    for i in range(1, boardRepresentationStrsNum):
+    for i in range(1, BOARD_SIZE):
         copy = getBoardCopy(board)
         if isSpaceFree(copy, i):
             makeMove(copy, playerLetter, i)
@@ -160,71 +160,64 @@ def getComputerMove(board, computerMove):
 def isBoardFull(board):
     """Returns True if every space on the board has been 
     taken. Otherwise returns False."""
-    for i in range(1, boardRepresentationStrsNum):
+    for i in range(1, BOARD_SIZE):
         if isSpaceFree(board, i):
             return False
     return True
 
 
-print('Welcome to Tic Tac Toe!')
-
 # TODO: The following mega code block is a huge hairy monster. Break it down 
 # into smaller methods. Use TODO s and the comment above each section as a guide 
 # for refactoring.
+def newGame():
+    print('Welcome to Tic Tac Toe!')
 
-# TODO: Work this shit out
+    while True:
+        # Reset the board
+        # TODO: Refactor the magic number in this line 
+        # (and all of the occurrences of 10 that are conceptually the same.)
+        # Refactored the 10? Made a global variable
 
-def resetBoard():
-# while True:
-    # Reset the board
-    # TODO: Refactor the magic number in this line 
-    # (and all of the occurrences of 10 that are conceptually the same.)
-    # Refactored the 10? Made a global variable
-    theBoard = [' '] * boardRepresentationStrsNum 
-    playerLetter, computerLetter = inputPlayerLetter()
-    turn = whoGoesFirst()
-    print('The ' + turn + ' will go first.')
-    gameIsPlaying = True # TODO: Study how this variable is used. Does it ring a bell? (which refactoring method?) 
-                        #       See whether you can get rid of this 'flag' variable. If so, remove it.
-    return (theBoard, playerLetter, computerLetter, turn, gameIsPlaying)
+        playerLetter, computerLetter = inputPlayerLetter()
+        turn = whoGoesFirst()
+        print('The ' + turn + ' will go first.')
 
-def playGame(theBoard, playerLetter, computerLetter, turn, gameIsPlaying):
-    while gameIsPlaying: # TODO: Usually (not always), loops (or their content) are good candidates to be extracted into their own function.
-                         #       Use a meaningful name for the function you choose.
-        if turn == 'player':
-            # Player’s turn.
-            drawBoard(theBoard)
+        playGame(turn, playerLetter, computerLetter)
+
+        if not playAgain():
+            break
+
+
+def playGame(turn, playerLetter, computerLetter):
+   
+    theBoard = [' '] * BOARD_SIZE
+    if turn == 'player':
+        currentMove = 1
+    else:
+        currentMove = -1
+
+    while True:
+        if currentMove == 1:
             move = getPlayerMove(theBoard)
-            makeMove(theBoard, playerLetter, move)
-
-            if isWinner(theBoard, playerLetter):
-                drawBoard(theBoard)
-                print('Hooray! You have won the game!')
-                gameIsPlaying = False
-            else:  # TODO: is this 'else' necessary?
-                if isBoardFull(theBoard):
-                    drawBoard(theBoard)
-                    print('The game is a tie!')
-                    break
-                else:  # TODO: Is this 'else' necessary?
-                    turn = 'computer'
-
         else:
-            # Computer’s turn.
             move = getComputerMove(theBoard, computerLetter)
-            makeMove(theBoard, computerLetter, move)
 
-            if isWinner(theBoard, computerLetter):
-                drawBoard(theBoard)
-                print('The computer has beaten you! You lose.')
-                gameIsPlaying = False
-            else:     # TODO: is this 'else' necessary?
-                if isBoardFull(theBoard):
-                    drawBoard(theBoard)
-                    print('The game is a tie!')
-                    break
-                else: # TODO: Is this 'else' necessary?
-                    turn = 'player'
+        makeMove(theBoard, playerLetter, move)
+        drawBoard(theBoard)
 
-    if not playAgain():
-        break
+        if isWinner(theBoard, playerLetter):
+            print('Hooray! You have won the game!')
+            break
+        elif isWinner(theBoard, computerLetter):
+            print('The computer has beaten you! You lose.')
+            break
+            
+        if isBoardFull(theBoard):
+            print('The game is a tie!')
+            break
+
+        currentMove *= -1
+
+newGame()
+
+        
